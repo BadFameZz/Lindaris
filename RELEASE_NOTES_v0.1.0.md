@@ -12,7 +12,15 @@ Die erste öffentliche Version von Lindaris.
 
 ## Installation
 
-DMG öffnen, App nach *Programme* ziehen. **Beim ersten Start Rechtsklick → Öffnen** (die App ist nicht bei Apple notarisiert, macOS blockiert sonst den Doppelklick).
+DMG öffnen, App nach *Programme* ziehen. Dann **einmalig freigeben** — macOS blockiert die App sonst, weil sie nicht bei Apple notarisiert ist:
+
+```
+xattr -cr /Applications/Lindaris.app
+```
+
+Danach startet sie normal per Doppelklick. Ohne Terminal geht es auch über *Systemeinstellungen → Datenschutz & Sicherheit → „Trotzdem öffnen"*.
+
+*Rechtsklick → Öffnen funktioniert seit macOS 15 nicht mehr* für nicht-notarisierte Apps — falls du das aus älteren Anleitungen kennst.
 
 Für den Export wird [ffmpeg](https://ffmpeg.org) gebraucht: `brew install ffmpeg`
 

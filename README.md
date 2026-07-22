@@ -13,17 +13,40 @@ Universal Binary — läuft auf Apple Silicon (M1/M2/M3) und Intel-Macs.
 ## Installation
 
 1. DMG öffnen, **Lindaris.app** in den Ordner *Programme* ziehen.
-2. **Beim ersten Start:** Rechtsklick auf die App → **Öffnen** → im Dialog nochmal **Öffnen**.
+2. **Einmalig freigeben.** macOS blockiert die App beim ersten Start, weil sie nicht
+   bei Apple notarisiert ist. Der zuverlässigste Weg ist ein Befehl im Terminal:
 
-> **Warum der Umweg?** Lindaris ist nicht bei Apple notarisiert (das kostet ein
-> kostenpflichtiges Entwicklerkonto). macOS blockiert deshalb den normalen
-> Doppelklick beim ersten Mal. Der Rechtsklick-Weg ist Apples offizieller Weg,
-> eine Anwendung trotzdem zu starten — danach öffnet sie normal per Doppelklick.
+   ```
+   xattr -cr /Applications/Lindaris.app
+   ```
+
+   Danach startet sie per Doppelklick — dauerhaft.
+
+<details>
+<summary>Ohne Terminal (macOS 15 und neuer)</summary>
+
+1. App doppelklicken → macOS blockiert sie
+2. **Systemeinstellungen → Datenschutz & Sicherheit** öffnen
+3. Ganz nach unten scrollen: dort steht „Lindaris wurde blockiert …" mit dem Knopf
+   **Trotzdem öffnen**
+4. Klicken, mit Passwort oder Touch ID bestätigen
+
+</details>
+
+> **Warum das nötig ist:** Notarisierung setzt ein kostenpflichtiges Apple-Entwickler­konto
+> voraus. Ohne sie markiert macOS jeden Browser-Download als „Quarantäne" und blockiert
+> den Start. Der Befehl oben entfernt genau diese Markierung — an der App selbst ändert
+> er nichts.
 >
-> Falls macOS die App als „beschädigt" meldet, hilft im Terminal:
-> ```
-> xattr -cr /Applications/Lindaris.app
-> ```
+> **Hinweis:** Der früher übliche Weg *Rechtsklick → Öffnen* funktioniert seit macOS 15
+> **nicht mehr** für nicht-notarisierte Apps. Nimm einen der beiden Wege oben.
+
+Wenn die App woanders liegt als in *Programme*, den Pfad im Befehl entsprechend anpassen,
+zum Beispiel:
+
+```
+xattr -cr "/Volumes/Meine SSD/Applications/Lindaris.app"
+```
 
 ## Systemvoraussetzungen
 
