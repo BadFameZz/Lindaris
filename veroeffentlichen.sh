@@ -1,49 +1,50 @@
 #!/bin/bash
-# Lindaris 0.1.0 auf GitHub veröffentlichen.
+# Eine Lindaris-Version auf GitHub veröffentlichen.
+#
+#   ./veroeffentlichen.sh 0.1.2     — diese Version veröffentlichen
+#   ./veroeffentlichen.sh           — die neueste DMG im Ordner nehmen
+#
 # Voraussetzung: `gh auth login` ist einmal gelaufen (siehe README des Ordners).
-set -e
+set -euo pipefail
 
 cd "$(dirname "$0")"
 REPO="Lindaris"
-TAG="v0.1.0"
-DMG="Lindaris_0.1.0_universal.dmg"
 
-if [ ! -f "$DMG" ]; then
-  echo "FEHLER: $DMG fehlt in $(pwd)"
-  exit 1
+# Version bestimmen: Argument, sonst die neueste DMG im Ordner.
+if [ $# -ge 1 ]; then
+  VERSION="$1"
+else
+  NEUESTE=$(ls -t Lindaris_*_universal.dmg 2>/dev/null | head -1)
+  [ -n "$NEUESTE" ] || { echo "FEHLER: keine Lindaris_*_universal.dmg in $(pwd)"; exit 1; }
+  VERSION=$(echo "$NEUESTE" | sed -E 's/^Lindaris_(.+)_universal\.dmg$/\1/')
+  echo "Keine Version angegeben — nehme die neueste DMG: $VERSION"
 fi
 
-if ! gh auth status >/dev/null 2>&1; then
-  echo "FEHLER: nicht bei GitHub angemeldet. Zuerst ausführen:  gh auth login"
-  exit 1
-fi
+TAG="v$VERSION"
+DMG="Lindaris_${VERSION}_universal.dmg"
+NOTES="RELEASE_NOTES_${TAG}.md"
+
+# Alles Nötige muss da sein, bevor irgendetwas hochgeht.
+[ -f "$DMG" ]   || { echo "FEHLER: $DMG fehlt in $(pwd)"; exit 1; }
+[ -f "$NOTES" ] || { echo "FEHLER: $NOTES fehlt in $(pwd)"; exit 1; }
+gh auth status >/dev/null 2>&1 || { echo "FEHLER: nicht bei GitHub angemeldet. Zuerst:  gh auth login"; exit 1; }
 
 USER=$(gh api user --jq .login)
-echo "Angemeldet als: $USER"
+echo "Angemeldet als: $USER — veröffentliche $TAG"
 
-# 1) Repo anlegen (falls es noch nicht existiert) und README hochladen
-if gh repo view "$USER/$REPO" >/dev/null 2>&1; then
-  echo "Repo $USER/$REPO existiert bereits — überspringe das Anlegen."
-  git remote get-url origin >/dev/null 2>&1 || git remote add origin "https://github.com/$USER/$REPO.git"
-else
-  echo "Lege öffentliches Repo $USER/$REPO an …"
-  gh repo create "$REPO" --public \
-    --description "Audio-Visualizer für macOS — System-Audio visualisieren, Musikvideos bauen und als MP4 exportieren" \
-    --source=. --remote=origin
-fi
-
+# 1) README und Screenshots hochladen
 echo "Lade README und Screenshots hoch …"
 git push -u origin main
 
-# 2) Release mit der DMG anlegen
+# 2) Release anlegen oder die DMG an ein vorhandenes anhängen
 if gh release view "$TAG" >/dev/null 2>&1; then
   echo "Release $TAG existiert schon — hänge die DMG an (überschreibt eine vorhandene)."
   gh release upload "$TAG" "$DMG" --clobber
 else
-  echo "Lege Release $TAG an und lade die DMG hoch (8 MB, dauert kurz) …"
+  echo "Lege Release $TAG an und lade die DMG hoch (etwa 9 MB) …"
   gh release create "$TAG" "$DMG" \
-    --title "Lindaris 0.1.0" \
-    --notes-file RELEASE_NOTES_v0.1.0.md
+    --title "Lindaris $VERSION" \
+    --notes-file "$NOTES"
 fi
 
 echo

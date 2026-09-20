@@ -1,3 +1,5 @@
+<img src="docs/icon.png" width="128" alt="Lindaris-Icon">
+
 # Lindaris
 
 Ein Audio-Visualizer für macOS: System-Audio live visualisieren, oder einen Song laden, eine Musikvideo-Szene bauen und als MP4 exportieren.
@@ -79,7 +81,7 @@ xattr -cr "/Volumes/Meine SSD/Applications/Lindaris.app"
 
 ## Status
 
-Frühe Version (0.1.0). Sie tut, was oben steht, und wurde auf einem Apple-Silicon-Mac
+Frühe Version (0.1.2). Sie tut, was oben steht, und wurde auf einem Apple-Silicon-Mac
 end-to-end getestet — inklusive eines echten Videoexports. Auf Intel-Macs ist sie
 gebaut, aber nicht gelaufen.
 
